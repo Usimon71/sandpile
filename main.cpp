@@ -6,12 +6,12 @@ int main(){
     
     SandPile* arr = new SandPile[n];
     
-    arr[0] = SandPile{Coord{2, 2}, 100};
+    arr[0] = SandPile{{0, 0}, 9};
+    arr[1] = SandPile{{0, 2}, 9};
     
     
     GridInit grid_init = CreateGrid(arr, n);
-    
-    uint64_t iter = 60;
+    uint64_t iter = 7;
     
     ToFallList fl = grid_init.tfl;
     for (int i = 0; i != iter; ++i) {

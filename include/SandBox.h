@@ -36,4 +36,4 @@ struct GridInit {
 
 GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n);
 
-ToFallList FallPiles(const Grid& grid_struct, const ToFallList& tfl);
+ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl);
