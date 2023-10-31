@@ -25,6 +25,8 @@ struct Grid {
     uint8_t** grid;
     uint16_t side_x;
     uint16_t side_y;
+    Coord top_left {0, 0};
+    Coord bot_right {0, 0};
 };
 
 struct GridInit {
