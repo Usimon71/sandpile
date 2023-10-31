@@ -43,7 +43,7 @@ GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n) {
         if (SandPileArr[i].val < 4) {
             res_grid[final_coord_y][final_coord_x] = SandPileArr[i].val;
         } else {
-            res_grid[final_coord_y][final_coord_x] = 9;
+            res_grid[final_coord_y][final_coord_x] = 4;
             tfl.list[list_i] = SandPile{Coord{final_coord_x, final_coord_y}, SandPileArr[i].val};
             ++list_i;
         }
@@ -174,12 +174,14 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
         for (uint16_t j = 0; j != side_x; ++j){
             if (grid[i][j] >= 4 && grid[i][j] <= 7){
                 new_to_fall_list[ntfl_i] = SandPile{Coord{j, i}, grid[i][j]};
+                grid[i][j] = 4;
                 ++ntfl_i;
             } else if (grid[i][j] >= 9 && grid[i][j] <= 13) {
                 for (uint16_t k = 0; k != n; ++k) {
                     if (to_fall_list[k].coord.x == j && to_fall_list[k].coord.y == i) {
                         new_to_fall_list[ntfl_i] = SandPile{Coord{j, i}, grid[i][j] - 9 + to_fall_list[k].val};
                         ++ntfl_i;
+                        grid[i][j] = 4;
                         break;
                     }
                 }
