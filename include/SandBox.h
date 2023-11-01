@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cinttypes>
 
+#pragma once
+
 struct Coord {
     uint16_t x = 0;
     uint16_t y = 0;
@@ -27,6 +29,7 @@ struct Grid {
     uint16_t side_y;
     Coord top_left {0, 0};
     Coord bot_right {0, 0};
+    bool is_stable = false;
 };
 
 struct GridInit {

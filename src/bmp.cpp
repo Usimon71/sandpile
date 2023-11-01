@@ -22,7 +22,7 @@ void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t
     std::ofstream BMP_file_out(file_output, std::ios::binary);
     std::cout << height << " " << width << std::endl;;
     BMPFileHeader file_header;
-    std::cout << sizeof(BMPFileHeader) + sizeof(BMPInfo) << "       '\n";
+    std::cout << sizeof(BMPFileHeader) + sizeof(BMPInfo) << "       \n";
     file_header.bfSize = sizeof(BMPFileHeader) + sizeof(BMPInfo) + (height*width) / 2;
     file_header.bfOffBits = sizeof(BMPFileHeader) + sizeof(BMPInfo) + sizeof(palette);
 
@@ -38,7 +38,8 @@ void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t
     BMP_file_out.write(reinterpret_cast<char*>(&info_header), sizeof(BMPInfo));
     BMP_file_out.write(reinterpret_cast<char*>(&palette), sizeof(palette));
 
-
+    int bonus = (4 - ((width + 1) / 2) % 4) % 4;
+    std::cout << bonus << '\n';
     for (int i = top_border; i <= bottom_border; ++i) {
         for (int j = left_border; j <= right_border; j += 2) {
             
@@ -46,7 +47,7 @@ void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t
            
             BMP_file_out.put(res);
         }
-        for (int k = 0; k < (4 - ((width + 3) % 4)) % 4; ++k) {
+        for (int k = 0; k < bonus; ++k) {
             BMP_file_out.put(0);
         }
     }

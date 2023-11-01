@@ -2,6 +2,8 @@
 #include <filesystem>
 #include <fstream>
 
+#pragma once
+
 #pragma pack(push, 1)
 struct BMPFileHeader {
     uint16_t bfType {0x4D42};
