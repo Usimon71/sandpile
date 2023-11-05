@@ -1,8 +1,8 @@
+#pragma once
+
 #include <cinttypes>
 #include <filesystem>
 #include <fstream>
-
-#pragma once
 
 #pragma pack(push, 1)
 struct BMPFileHeader {

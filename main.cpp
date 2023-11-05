@@ -1,38 +1,51 @@
 #include <iostream>
-#include <filesystem>
-#include <fstream>
+#include <limits>
 
+#include "include/images.h"
 #include "include/SandBox.h"
 #include "include/bmp.h"
+#include "include/parser.h"
 
-int main(){
-    uint64_t n = 1;
+int main(const int argc, const char** argv){
+    
+    const ParseResult pr = Parse(argc, argv);
+
+    const char* input = pr.input;
+    
+    std::ifstream input_file(input);
+    uint64_t n = 0;
+    uint16_t x;
+    uint16_t y;
+    uint16_t val;
+    while (input_file >> x >> y >> val) {
+        ++n;
+    }
     
     SandPile* arr = new SandPile[n];
-    
-    arr[0] = SandPile{{0, 0}, 10000};
-    std::filesystem::path path = "images/file1.bmp";
-    
-    GridInit grid_init = CreateGrid(arr, n);
-    uint64_t max_iter = 10000;
-    
-    ToFallList fl = grid_init.tfl;
-    uint64_t i = 0;
 
-    while (i < max_iter and !grid_init.grid.is_stable){
-        fl = FallPiles(grid_init.grid, fl);
+    input_file.clear();
+    input_file.seekg(0, input_file.beg);
+
+    uint16_t min_x = std::numeric_limits<uint16_t>::max();
+    uint16_t min_y = std::numeric_limits<uint16_t>::max();
+    uint16_t max_x = 0;
+    uint16_t max_y = 0;
+
+    uint64_t i = 0;
+    while (input_file >> x >> y >> val) {
+        min_x = std::min(min_x, x);
+        max_x = std::max(max_x, x);
+        min_y = std::min(min_y, y);
+        max_y = std::max(max_y, y);
+
+        arr[i] = SandPile{{x, y}, val};
         ++i;
     }
-    // for (uint64_t i = 0; i != max_iter; ++i) {
-    //     fl = FallPiles(grid_init.grid, fl);
-           
-    // }
-    // for (uint16_t i = grid_init.grid.top_left.y; i != grid_init.grid.bot_right.y + 1; ++i) {
-    //     for (uint16_t j = grid_init.grid.top_left.x; j != grid_init.grid.bot_right.x + 1; ++j) {
-    //         std::cout << static_cast<int>(grid_init.grid.grid[i][j]) << " ";
-    //     }
-    //     std::cout << '\n';
-    // }
-    CreateImage(grid_init.grid.grid, path, grid_init.grid.top_left.x, grid_init.grid.bot_right.x, 
-                    grid_init.grid.top_left.y, grid_init.grid.bot_right.y);
+
+    int32_t* res = new int32_t[4] {min_x, min_y, max_x, max_y};
+    
+    GridInit grid_init = CreateGrid(arr, n, res);
+    delete [] res;
+
+    CreateImages(pr, grid_init);
 }

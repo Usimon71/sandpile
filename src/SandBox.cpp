@@ -1,41 +1,23 @@
-#include "../include/SandBox.h"
 #include <limits>
 #include <algorithm>
 
-int32_t* FindCorners(const SandPile* SandPileArr, uint16_t n) {
-    uint16_t min_x = std::numeric_limits<uint16_t>::max();
-    uint16_t min_y = std::numeric_limits<uint16_t>::max();
-    uint16_t max_x = 0;
-    uint16_t max_y = 0;
-    
-    for (uint64_t i = 0; i != n; ++i) {
-        
-        min_x = std::min(min_x, SandPileArr[i].coord.x);
-        max_x = std::max(max_x, SandPileArr[i].coord.x);
-        min_y = std::min(min_y, SandPileArr[i].coord.y);
-        max_y = std::max(max_y, SandPileArr[i].coord.y);
+#include "../include/SandBox.h"
 
-    }
-    int32_t* res = new int32_t[4] {min_x, min_y, max_x, max_y};
-
-    return res;
-}
-
-
-
-GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n) {
+GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n, const int32_t* corners) {
     ToFallList tfl {new SandPile[n], n};
     uint64_t list_i = 0;
-    int32_t* corners = FindCorners(SandPileArr, n);
     uint16_t side_x;
     uint16_t side_y;
     side_x = corners[2] - corners[0] + 1;
     side_y = corners[3] - corners[1] + 1;
+
     Coord bot_right {static_cast<uint16_t>(corners[2] - corners[0]), static_cast<uint16_t>(corners[3] - corners[1])};
+
     uint8_t** res_grid = new uint8_t*[side_y];
     for (uint16_t i = 0; i != side_y; ++i) {
         res_grid[i] = new uint8_t[side_x];
     }
+
     for (uint64_t i = 0; i != n; ++i) {
         uint16_t final_coord_x = SandPileArr[i].coord.x - corners[0];
         uint16_t final_coord_y = SandPileArr[i].coord.y - corners[1];
@@ -44,11 +26,12 @@ GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n) {
             res_grid[final_coord_y][final_coord_x] = SandPileArr[i].val;
         } else {
             res_grid[final_coord_y][final_coord_x] = 4;
-            tfl.list[list_i] = SandPile{Coord{final_coord_x, final_coord_y}, SandPileArr[i].val};
+            tfl.list[list_i] = SandPile{{final_coord_x, final_coord_y}, SandPileArr[i].val};
             ++list_i;
         }
     }
-    return GridInit {Grid{res_grid, side_x, side_y, Coord{0, 0}, bot_right}, ToFallList{tfl.list, list_i}};
+
+    return GridInit {Grid{res_grid, side_x, side_y, {0, 0}, bot_right}, ToFallList{tfl.list, list_i}};
 }
 
 Grid GridExpand(const ToFallList& tfl, const Grid& grid_struct, bool side) {
@@ -60,9 +43,12 @@ Grid GridExpand(const ToFallList& tfl, const Grid& grid_struct, bool side) {
     if (side) { // expand vertically
         uint16_t new_side_y = cur_side_y * 2 + cur_side_y % 2;
         uint16_t offset_y = cur_side_y / 2 + cur_side_y % 2;
-        Coord top_left {static_cast<uint16_t>(grid_struct.top_left.x), static_cast<uint16_t>(grid_struct.top_left.y + offset_y)};
-        Coord bot_right {static_cast<uint16_t>(grid_struct.bot_right.x), static_cast<uint16_t>(grid_struct.bot_right.y + offset_y)};
+        Coord top_left {static_cast<uint16_t>(grid_struct.top_left.x),
+                        static_cast<uint16_t>(grid_struct.top_left.y + offset_y)};
+        Coord bot_right {static_cast<uint16_t>(grid_struct.bot_right.x), 
+                         static_cast<uint16_t>(grid_struct.bot_right.y + offset_y)};
         Grid new_grid {new uint8_t*[new_side_y], cur_side_x, new_side_y, top_left, bot_right};
+
         for (uint16_t i = 0; i != new_side_y; ++i) {
             new_grid.grid[i] = new uint8_t[cur_side_x] {0};
         }
@@ -84,8 +70,10 @@ Grid GridExpand(const ToFallList& tfl, const Grid& grid_struct, bool side) {
     } else { // expand horizontally
         uint16_t new_side_x = cur_side_x * 2 + cur_side_x % 2;
         uint16_t offset_x = cur_side_x / 2 + cur_side_x % 2;
-        Coord top_left{static_cast<uint16_t>(grid_struct.top_left.x + offset_x), static_cast<uint16_t>(grid_struct.top_left.y)};
-        Coord bot_right{static_cast<uint16_t>(grid_struct.bot_right.x + offset_x), static_cast<uint16_t>(grid_struct.bot_right.y)};
+        Coord top_left{static_cast<uint16_t>(grid_struct.top_left.x + offset_x),
+                       static_cast<uint16_t>(grid_struct.top_left.y)};
+        Coord bot_right{static_cast<uint16_t>(grid_struct.bot_right.x + offset_x), 
+                        static_cast<uint16_t>(grid_struct.bot_right.y)};
         Grid new_grid {new uint8_t*[cur_side_y], new_side_x, cur_side_y, top_left, bot_right};
         for (uint16_t i = 0; i != cur_side_y; ++i) {
             new_grid.grid[i] = new uint8_t[new_side_x] {0};
@@ -104,9 +92,9 @@ Grid GridExpand(const ToFallList& tfl, const Grid& grid_struct, bool side) {
             delete [] cur_grid[i];
         }
         delete [] cur_grid;
+
         return new_grid;
     }
-
 }
 
 ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
@@ -120,6 +108,12 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
     uint16_t min_y = std::numeric_limits<uint16_t>::max();
     uint16_t max_x = 0;
     uint16_t max_y = 0;
+    
+    if (n == 0) {
+        grid_struct.is_stable = true;
+        return tfl;
+    }
+    
     for (uint64_t i = 0; i != n; ++i) {
         
         to_fall_list[i].val -= 4;

@@ -1,10 +1,8 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-//#include <string>
 
 #include "../include/bmp.h"
-//#include <windows.h>
 
 RGBQuad palette[5] = {
     RGBQuad {255, 255, 255, 0}, //white
@@ -20,9 +18,9 @@ void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t
     uint16_t height = bottom_border - top_border + 1;
     uint16_t width = right_border - left_border + 1;
     std::ofstream BMP_file_out(file_output, std::ios::binary);
-    std::cout << height << " " << width << std::endl;;
+    //std::cout << height << " " << width << std::endl;;
     BMPFileHeader file_header;
-    std::cout << sizeof(BMPFileHeader) + sizeof(BMPInfo) << "       \n";
+    //std::cout << sizeof(BMPFileHeader) + sizeof(BMPInfo) << "       \n";
     file_header.bfSize = sizeof(BMPFileHeader) + sizeof(BMPInfo) + (height*width) / 2;
     file_header.bfOffBits = sizeof(BMPFileHeader) + sizeof(BMPInfo) + sizeof(palette);
 
@@ -39,7 +37,7 @@ void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t
     BMP_file_out.write(reinterpret_cast<char*>(&palette), sizeof(palette));
 
     int bonus = (4 - ((width + 1) / 2) % 4) % 4;
-    std::cout << bonus << '\n';
+    //std::cout << bonus << '\n';
     for (int i = top_border; i <= bottom_border; ++i) {
         for (int j = left_border; j <= right_border; j += 2) {
             

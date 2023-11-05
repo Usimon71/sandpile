@@ -1,7 +1,7 @@
+#pragma once
+
 #include <iostream>
 #include <cinttypes>
-
-#pragma once
 
 struct Coord {
     uint16_t x = 0;
@@ -11,11 +11,6 @@ struct Coord {
 struct SandPile {
     Coord coord {0, 0};
     uint64_t val = 0;
-};
-
-struct SandBox {
-    Coord left_up {0, 0};
-    Coord right_down {0, 0};
 };
 
 struct ToFallList {
@@ -39,6 +34,6 @@ struct GridInit {
 
 
 
-GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n);
+GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n, const int32_t* corners);
 
-ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl);
+ToFallList FallPiles (Grid& grid_struct, ToFallList& tfl);

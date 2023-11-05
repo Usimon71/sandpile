@@ -6,7 +6,8 @@ enable_testing()
 
 add_executable(SandPile main.cpp
                 src/SandBox.cpp
-                src/bmp.cpp)
+                src/bmp.cpp
+                src/parser.cpp)
 
 target_compile_features(SandPile PRIVATE cxx_std_20)
 target_include_directories(SandPile PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
