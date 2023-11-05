@@ -3,7 +3,12 @@
 
 #include "../include/SandBox.h"
 
-GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n, const int32_t* corners) {
+const uint8_t kBlackDetect = 4;
+const uint8_t kWasInTfl = 9;
+const uint8_t kMaxIfWasntInTfl = 7;
+const uint8_t kMaxIfWasInTfl = 13;
+
+GridInit CreateGrid(const SandPile* SandPileArr, uint16_t n, const int32_t* corners) {
     ToFallList tfl {new SandPile[n], n};
     uint64_t list_i = 0;
     uint16_t side_x;
@@ -22,10 +27,10 @@ GridInit CreateGrid (const SandPile* SandPileArr, uint16_t n, const int32_t* cor
         uint16_t final_coord_x = SandPileArr[i].coord.x - corners[0];
         uint16_t final_coord_y = SandPileArr[i].coord.y - corners[1];
 
-        if (SandPileArr[i].val < 4) {
+        if (SandPileArr[i].val < kBlackDetect) {
             res_grid[final_coord_y][final_coord_x] = SandPileArr[i].val;
         } else {
-            res_grid[final_coord_y][final_coord_x] = 4;
+            res_grid[final_coord_y][final_coord_x] = kBlackDetect;
             tfl.list[list_i] = SandPile{{final_coord_x, final_coord_y}, SandPileArr[i].val};
             ++list_i;
         }
@@ -61,6 +66,7 @@ Grid GridExpand(const ToFallList& tfl, const Grid& grid_struct, bool side) {
         for (uint64_t i = 0; i != cur_tfl_n; ++i) {
             cur_tfl[i].coord.y += offset_y;
         }
+        
         for (uint16_t i = 0; i != cur_side_y; ++i) {
             delete [] cur_grid[i];
         }
@@ -117,8 +123,8 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
     for (uint64_t i = 0; i != n; ++i) {
         
         to_fall_list[i].val -= 4;
-        if (to_fall_list[i].val >= 4) {
-            grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x] = 9;
+        if (to_fall_list[i].val >= kBlackDetect) {
+            grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x] = kWasInTfl;
         } else {
             grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x] = to_fall_list[i].val;
         }
@@ -131,7 +137,7 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
             grid_obj = GridExpand(tfl, grid_struct, 1);
             expand_y = true;
         }
-        ++grid[to_fall_list[i].coord.y - 1][to_fall_list[i].coord.x] >= 4 ? cnt += 1 : cnt;
+        ++grid[to_fall_list[i].coord.y - 1][to_fall_list[i].coord.x] >= kBlackDetect ? cnt += 1 : cnt;
         if (to_fall_list[i].coord.y - 1 < grid_obj.top_left.y) {
             grid_obj.top_left.y = to_fall_list[i].coord.y - 1;
         }
@@ -139,16 +145,17 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
         if (!expand_y && (to_fall_list[i].coord.y + 1 > side_y - 1)) {
             grid_obj = GridExpand(tfl, grid_struct, 1);
         }
-        ++grid[to_fall_list[i].coord.y + 1][to_fall_list[i].coord.x] >= 4 ? cnt += 1 : cnt;
+        ++grid[to_fall_list[i].coord.y + 1][to_fall_list[i].coord.x] >= kBlackDetect ? cnt += 1 : cnt;
         if (to_fall_list[i].coord.y + 1 > grid_obj.bot_right.y) {
             grid_obj.bot_right.y = to_fall_list[i].coord.y + 1;
        
         }
+
         if (to_fall_list[i].coord.x - 1 < 0) {
             grid_obj = GridExpand(tfl, grid_struct, 0);
             expand_x = true;
         }
-        ++grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x - 1] >= 4 ? cnt += 1 : cnt;
+        ++grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x - 1] >= kBlackDetect ? cnt += 1 : cnt;
         if (to_fall_list[i].coord.x - 1 < grid_obj.top_left.x) {
             grid_obj.top_left.x = to_fall_list[i].coord.x - 1;
         }
@@ -156,7 +163,7 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
         if (!expand_x && (to_fall_list[i].coord.x + 1 > side_x - 1)) {
                 grid_obj = GridExpand(tfl, grid_struct, 0);
         }
-        ++grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x + 1] >= 4 ? cnt += 1 : cnt;
+        ++grid[to_fall_list[i].coord.y][to_fall_list[i].coord.x + 1] >= kBlackDetect ? cnt += 1 : cnt;
         if (to_fall_list[i].coord.x + 1 > grid_obj.bot_right.x) {
             grid_obj.bot_right.x = to_fall_list[i].coord.x + 1;
         }
@@ -165,17 +172,17 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
     SandPile* new_to_fall_list = new SandPile[cnt];
     uint16_t ntfl_i = 0;
     for (uint16_t i = 0; i != side_y; ++i) {
-        for (uint16_t j = 0; j != side_x; ++j){
-            if (grid[i][j] >= 4 && grid[i][j] <= 7){
+        for (uint16_t j = 0; j != side_x; ++j) {
+            if (grid[i][j] >= kBlackDetect && grid[i][j] <= kMaxIfWasntInTfl){ 
                 new_to_fall_list[ntfl_i] = SandPile{Coord{j, i}, grid[i][j]};
-                grid[i][j] = 4;
+                grid[i][j] = kBlackDetect;
                 ++ntfl_i;
-            } else if (grid[i][j] >= 9 && grid[i][j] <= 13) {
+            } else if (grid[i][j] >= kWasInTfl && grid[i][j] <= kMaxIfWasInTfl) {
                 for (uint16_t k = 0; k != n; ++k) {
                     if (to_fall_list[k].coord.x == j && to_fall_list[k].coord.y == i) {
-                        new_to_fall_list[ntfl_i] = SandPile{Coord{j, i}, grid[i][j] - 9 + to_fall_list[k].val};
+                        new_to_fall_list[ntfl_i] = SandPile{Coord{j, i}, grid[i][j] - kWasInTfl + to_fall_list[k].val};
                         ++ntfl_i;
-                        grid[i][j] = 4;
+                        grid[i][j] = kBlackDetect;
                         break;
                     }
                 }
@@ -185,5 +192,4 @@ ToFallList FallPiles(Grid& grid_struct, ToFallList& tfl) {
     delete [] to_fall_list;
 
     return ToFallList{new_to_fall_list, ntfl_i};
-
 }

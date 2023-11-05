@@ -20,6 +20,7 @@ char* IntToStr(uint64_t ind, int len) {
         ind /= 10;
         --i;
     }
+
     return res;
 }
 
@@ -29,11 +30,11 @@ char* Path(const char* directory, const char* ind, int len_ind, int len_dir) {
     std::strcat(res, "file");
     std::strcat(res, ind);
     std::strcat(res, ".bmp");
+
     return res;
 }
 
 void CreateImages(const ParseResult& pr, GridInit& grid_init) {
-    
     ToFallList fl = grid_init.tfl;  
     
     uint64_t max_iter = pr.max_iter;
@@ -43,10 +44,9 @@ void CreateImages(const ParseResult& pr, GridInit& grid_init) {
     int dir_len = std::strlen(directory);
 
     uint64_t i = 0;
-    while (i < max_iter and !grid_init.grid.is_stable){
+    while (i < max_iter and !grid_init.grid.is_stable) {
         if (i % freq == 0) {
             int i_len = (i == 0) ? 1 : trunc(log10(i)) + 1;
-            
             char* str_ind = IntToStr(i, i_len);
             const char* new_path = Path(directory, str_ind, i_len, dir_len);
             std::filesystem::path path = new_path;

@@ -19,14 +19,14 @@ struct BMPInfo {
     uint32_t bcSize;
     uint32_t bcWidth;
     uint32_t bcHeight;
-    uint16_t bcPlanes {1};
-    uint16_t bcBitCount;
-    uint32_t biCompression {0};
-    uint32_t biSizeImage {0};
-    int32_t biXPelsPerMete {0};
-    int32_t biYPelsPerMeter {0};
-    uint32_t biClrUsed;
-    uint32_t biClrImportant;
+    uint16_t bcPlanes = 1;
+    uint16_t bcBitCount = 4;
+    uint32_t biCompression = 0;
+    uint32_t biSizeImage = 0;
+    int32_t biXPelsPerMete = 0;
+    int32_t biYPelsPerMeter = 0;
+    uint32_t biClrUsed = 4;
+    uint32_t biClrImportant = 0;
 };
 #pragma pack(pop)
 
@@ -34,10 +34,8 @@ struct RGBQuad {
         uint8_t rgb_red;
         uint8_t rgb_green;
         uint8_t rgb_blue;
-        uint8_t rgb_reserved {0};
-    };
-
-
+        uint8_t rgb_reserved = 0;
+};
 
 void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t left_border, uint16_t right_border, 
                 uint16_t top_border, uint16_t bottom_border);

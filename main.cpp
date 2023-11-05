@@ -6,12 +6,13 @@
 #include "include/bmp.h"
 #include "include/parser.h"
 
-int main(const int argc, const char** argv){
-    
-    const ParseResult pr = Parse(argc, argv);
+struct GridWthCorners {
+    SandPile* arr;
+    uint64_t n = 0;
+    int32_t* corners;
+};
 
-    const char* input = pr.input;
-    
+GridWthCorners ParseTsv(const char* input) {
     std::ifstream input_file(input);
     uint64_t n = 0;
     uint16_t x;
@@ -43,9 +44,16 @@ int main(const int argc, const char** argv){
     }
 
     int32_t* res = new int32_t[4] {min_x, min_y, max_x, max_y};
-    
-    GridInit grid_init = CreateGrid(arr, n, res);
-    delete [] res;
 
+    return GridWthCorners{arr, n, res};
+}
+
+int main(const int argc, const char** argv){
+    const ParseResult pr = Parse(argc, argv);
+    const char* input = pr.input;
+    GridWthCorners gr_wth_corn = ParseTsv(pr.input);
+    GridInit grid_init = CreateGrid(gr_wth_corn.arr, gr_wth_corn.n, gr_wth_corn.corners);
+    delete [] gr_wth_corn.corners;
     CreateImages(pr, grid_init);
 }
+
