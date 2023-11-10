@@ -1,17 +1,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "../include/parser.h"
-
-
-uint64_t StrToInt(const char* str, int str_len) {
-    uint64_t res = 0;
-    for (int i = 0; i != str_len; ++i) {
-        res *= 10;
-        res += static_cast<uint64_t>(str[i] - '0');
-    }
-    return res;
-}
+#include "parser.h"
 
 ParseResult Parse(const int argc, const char** argv) {
     ParseResult pr;
@@ -37,13 +27,13 @@ ParseResult Parse(const int argc, const char** argv) {
                 std::cerr << "Please, write a correct command";
                 break;
             }
-            pr.max_iter = StrToInt(argv[i + 1], std::strlen(argv[i + 1]));
+            pr.max_iter = std::stoll(argv[i + 1]);
         } else if (!std::strcmp(argv[i], "-f") || !std::strcmp(argv[i], "--freq")) {
             if (i + 1 >= argc) {
                 std::cerr << "Please, write a correct command";
                 break;
             }
-            pr.freq = StrToInt(argv[i + 1], std::strlen(argv[i + 1]));
+            pr.freq = std::stoll(argv[i + 1]);
         }
     }
     

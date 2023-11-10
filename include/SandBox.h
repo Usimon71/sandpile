@@ -29,7 +29,7 @@ struct Grid {
 
 struct GridInit {
     Grid grid;
-    ToFallList tfl;
+    ToFallList fall_list;
 };
 
 

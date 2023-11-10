@@ -1,10 +1,10 @@
 #include <iostream>
 #include <limits>
 
-#include "include/images.h"
-#include "include/SandBox.h"
-#include "include/bmp.h"
-#include "include/parser.h"
+#include "images.h"
+#include "SandBox.h"
+#include "bmp.h"
+#include "parser.h"  
 
 struct GridWthCorners {
     SandPile* arr;
@@ -17,7 +17,7 @@ GridWthCorners ParseTsv(const char* input) {
     uint64_t n = 0;
     uint16_t x;
     uint16_t y;
-    uint16_t val;
+    uint64_t val;
     while (input_file >> x >> y >> val) {
         ++n;
     }
@@ -43,8 +43,7 @@ GridWthCorners ParseTsv(const char* input) {
         ++i;
     }
 
-    int32_t* res = new int32_t[4] {min_x, min_y, max_x, max_y};
-
+    int32_t res[4] = {min_x, min_y, max_x, max_y};
     return GridWthCorners{arr, n, res};
 }
 
@@ -53,7 +52,6 @@ int main(const int argc, const char** argv){
     const char* input = pr.input;
     GridWthCorners gr_wth_corn = ParseTsv(pr.input);
     GridInit grid_init = CreateGrid(gr_wth_corn.arr, gr_wth_corn.n, gr_wth_corn.corners);
-    delete [] gr_wth_corn.corners;
-    CreateImages(pr, grid_init);
+    CreateImagesFolder(pr, grid_init);
 }
 

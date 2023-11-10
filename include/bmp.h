@@ -37,5 +37,5 @@ struct RGBQuad {
         uint8_t rgb_reserved = 0;
 };
 
-void CreateImage(uint8_t** sandpile, std::filesystem::path file_output, uint16_t left_border, uint16_t right_border, 
+void CreateBmp(uint8_t** sandpile, std::filesystem::path file_output, uint16_t left_border, uint16_t right_border, 
                 uint16_t top_border, uint16_t bottom_border);
