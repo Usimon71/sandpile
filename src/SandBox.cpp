@@ -43,7 +43,7 @@ GridInit CreateGrid(const SandPile* SandPileArr, uint16_t n, const int32_t* corn
 
     uint8_t** res_grid = new uint8_t*[side_y];
     for (uint16_t i = 0; i != side_y; ++i) {
-        res_grid[i] = new uint8_t[side_x];
+        res_grid[i] = new uint8_t[side_x] {0};
     }
 
     for (uint64_t i = 0; i != n; ++i) {
