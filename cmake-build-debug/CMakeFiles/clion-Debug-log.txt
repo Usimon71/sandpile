@@ -1,0 +1,2 @@
+Cannot generate 'Debug' into /home/don-simon/ITMO/ITMO_IS_2semester/sandpile/cmake-build-debug
+Only in-source generation will be performed.
